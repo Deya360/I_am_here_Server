@@ -672,14 +672,11 @@ public class AndroidRestController {
 
             Set<Party> parties = subject.getParties();
 
-            Set<String> partyNames = new HashSet<>();
-            parties.forEach(party -> partyNames.add(party.getName()));
-
-            Set<Integer> partyIds = new HashSet<>();
-            parties.forEach(party -> partyIds.add(party.getParty()));
+            Map<Integer, String> partyIdNames = new HashMap<>();
+            parties.forEach(party -> partyIdNames.put(party.getParty(), party.getName()));
 
             return new ResponseEntity<>(
-                    FireBaseMessenger.sendNotification(partyNames, subject.getName(), message_body, partyIds),
+                    FireBaseMessenger.sendNotification(partyIdNames, subject.getName(), message_body),
                     HttpStatus.OK);
 
         }catch (Exception e){

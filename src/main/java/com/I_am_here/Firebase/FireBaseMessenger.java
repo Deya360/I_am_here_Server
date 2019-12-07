@@ -9,6 +9,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 
 public class FireBaseMessenger {
@@ -36,26 +37,24 @@ public class FireBaseMessenger {
      *
      * @throws FirebaseMessagingException .
      */
-    public static String sendNotification(Set<String> messageTitleParty, String messageTitleSubject, String messageBody,
-                                        Set<Integer> topicIds) throws FirebaseMessagingException {
-        AndroidConfig notificationConfig =
-                AndroidConfig.builder()
-                        .setTtl(3600 * 1000 * 24) // 1 day in milliseconds
-                        .setPriority(AndroidConfig.Priority.NORMAL)
-                        .setNotification(AndroidNotification.builder()
-                                .setTitle(String.format("%s - %s", messageTitleParty, messageTitleSubject))
-                                .setBody(messageBody)
-//                                .setIcon("stock_ticker_update")
-//                                .setColor("#f45342")
-                                .build())
-                        .build();
+    public static String sendNotification(Map<Integer, String> partyIdNames, String messageTitleSubject, String messageBody) throws FirebaseMessagingException {
 
         ArrayList<Message> messages = new ArrayList<>();
-        for (Integer topic : topicIds) {
+        for (Map.Entry<Integer, String> entry : partyIdNames.entrySet()) {
             messages.add(
                     Message.builder()
-                            .setAndroidConfig(notificationConfig)
-                            .setTopic(String.valueOf(topic))
+                            .setAndroidConfig(
+                                    AndroidConfig.builder()
+                                            .setTtl(3600 * 1000 * 24) // 1 day in milliseconds
+                                            .setPriority(AndroidConfig.Priority.NORMAL)
+                                            .setNotification(AndroidNotification.builder()
+                                                    .setTitle(String.format("%s - %s", entry.getValue(), messageTitleSubject))
+                                                    .setBody(messageBody)
+//                                                    .setIcon("stock_ticker_update")
+//                                                    .setColor("#f45342")
+                                                    .build())
+                                            .build())
+                            .setTopic(String.valueOf(entry.getKey()))
                             .build());
         }
 
